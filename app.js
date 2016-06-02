@@ -67,9 +67,10 @@ module.exports.today = function () {
   ], function (err) {
     if (err) {
       console.log(err);
+      process.exit(0);
     }
 
-    new epub(bookData, __dirname + '/CodeSimplicity.epub');
+    new epub(bookData, __dirname + new Date().toISOString().substring(0, 10) + ' - CodeSimplicity.epub');
     console.log('Done');
   });
 };
