@@ -21,6 +21,7 @@ module.exports.today = function () {
     },
     function (rss, doneCallback) {
       var cutoff = new Date().setHours(0, 0, 0, 0);
+      cutoff = new Date('2015-01-01');
 
       for (i = 0; i < rss.length; i++) {
         if (rss[i].published > cutoff) {
@@ -34,19 +35,20 @@ module.exports.today = function () {
       if (links.length === 0) {
         return doneCallback('There are no new articles today');
       }
+
       async.eachSeries(links, function (link, cb) {
         var options = {
           method: 'GET',
-          url: link
+          url: process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=' + link
         };
 
         request(options, function (err, response, body) {
-          body = JSON.parse(body);
           var chapter = {
             title: body.title,
             author: body.author,
             content: body.html
-          }
+          };
+
         });
       }, function (err) {
         if (err) {
@@ -68,75 +70,75 @@ module.exports.today = function () {
 };
 
 module.exports.archive = function () {
-  var links = [process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/welcome-to-code-simplicity/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/whats-wrong-with-computers/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/designing-too-far-into-the-future/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/simplicity-is-relative/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/purpose-and-simplicity/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/complexity-is-a-prison/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/how-simple-do-you-have-to-be/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/what-is-overengineering/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/ways-to-create-complexity-break-your-api/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/when-is-backwards-compatibility-not-worth-it/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/simplicity-and-strictness/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/there-is-no-science-of-software/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-primary-law-of-software-design/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/what-is-software-design/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-purpose-of-software/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-goals-of-software-design/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-second-law-of-software-design/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-third-law-of-software-design/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-fourth-law-of-software-design-complexity-vs-ease-of-maintenance/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/if-it-aint-broken/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/instant-gratification-instant-failure/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/truncated-posts-in-rss/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/complexity-and-the-wrong-solution/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/specific-solutions/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-never-shipping-product/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/fosscoach-2008/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/unforseeable-consequences-why-we-have-principles/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/creating-complexity-lock-in-to-bad-technologies/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/what-is-a-bug/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-source-of-bugs/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/talking-at-oscon/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/slides-from-my-talk/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/sane-software-design/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/design-from-the-start/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/designing-for-perfomance-and-the-future-of-computing/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/success-comes-from-execution-not-innovation/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/top-10-reasons-to-work-on-open-source-in-a-california-accent/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/what-is-a-computer/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/simplicity-and-security/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/structure-action-and-results/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/isar-clarified/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/features-simplicity-and-the-purpose-of-software/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/consistency-does-not-mean-uniformity/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/suck-less/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/how-we-figured-out-what-sucked/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-engineer-attitude/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-singular-secret-of-the-rockstar-programmer/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/why-programmers-suck/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/privacy-simplified/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-equation-of-software-design/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/software-design-in-two-sentence/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/before-you-begin/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-power-of-no/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/readability-and-naming-things/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/open-source-community-simplified/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/developer-hubris/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/clues-to-complexity/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/code-simplicity-the-science-of-software-development/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/software-as-knowledge/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/code-simplicity-second-revision/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-accuracy-of-future-predictions/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/users-have-problems-developers-have-solutions/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-philosophy-of-testing/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/make-it-never-come-back/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-secret-of-fast-programming-stop-thinking/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-purpose-of-technology/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/test-driven-development-and-the-cycle-of-observation/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/how-to-handle-code-complexity/',
-    process.ENV.PARSER_ARTICLE + '?api_key=' + process.ENV.PARSER_KEY + '&url=http://www.codesimplicity.com/post/two-is-too-many/'
+  var links = [process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/welcome-to-code-simplicity/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/whats-wrong-with-computers/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/designing-too-far-into-the-future/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/simplicity-is-relative/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/purpose-and-simplicity/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/complexity-is-a-prison/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/how-simple-do-you-have-to-be/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/what-is-overengineering/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/ways-to-create-complexity-break-your-api/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/when-is-backwards-compatibility-not-worth-it/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/simplicity-and-strictness/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/there-is-no-science-of-software/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-primary-law-of-software-design/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/what-is-software-design/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-purpose-of-software/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-goals-of-software-design/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-second-law-of-software-design/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-third-law-of-software-design/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-fourth-law-of-software-design-complexity-vs-ease-of-maintenance/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/if-it-aint-broken/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/instant-gratification-instant-failure/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/truncated-posts-in-rss/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/complexity-and-the-wrong-solution/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/specific-solutions/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-never-shipping-product/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/fosscoach-2008/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/unforseeable-consequences-why-we-have-principles/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/creating-complexity-lock-in-to-bad-technologies/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/what-is-a-bug/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-source-of-bugs/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/talking-at-oscon/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/slides-from-my-talk/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/sane-software-design/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/design-from-the-start/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/designing-for-perfomance-and-the-future-of-computing/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/success-comes-from-execution-not-innovation/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/top-10-reasons-to-work-on-open-source-in-a-california-accent/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/what-is-a-computer/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/simplicity-and-security/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/structure-action-and-results/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/isar-clarified/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/features-simplicity-and-the-purpose-of-software/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/consistency-does-not-mean-uniformity/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/suck-less/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/how-we-figured-out-what-sucked/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-engineer-attitude/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-singular-secret-of-the-rockstar-programmer/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/why-programmers-suck/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/privacy-simplified/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-equation-of-software-design/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/software-design-in-two-sentence/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/before-you-begin/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-power-of-no/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/readability-and-naming-things/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/open-source-community-simplified/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/developer-hubris/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/clues-to-complexity/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/code-simplicity-the-science-of-software-development/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/software-as-knowledge/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/code-simplicity-second-revision/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-accuracy-of-future-predictions/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/users-have-problems-developers-have-solutions/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-philosophy-of-testing/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/make-it-never-come-back/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-secret-of-fast-programming-stop-thinking/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/the-purpose-of-technology/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/test-driven-development-and-the-cycle-of-observation/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/how-to-handle-code-complexity/',
+    process.env.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=http://www.codesimplicity.com/post/two-is-too-many/'
   ];
 
   async.eachSeries(links, function (link, cb) {
