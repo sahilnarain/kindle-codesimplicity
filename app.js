@@ -7,30 +7,6 @@ var feedUrl = 'http://www.codesimplicity.com/feed';
 var content = [];
 
 module.exports.today = function () {
-  feed(feedUrl, function (err, result) {
-    if (err) {
-      console.log(err);
-      process.exit(0);
-    }
-
-    var cutoff = new Date().setHours(0, 0, 0, 0);
-    var bookData = {};
-    var links = [];
-
-    bookData.title = new Date().toISOString().substring(0, 10) + ' - Code Simplicity Blog';
-    bookData.author = 'Max Kanat-Alexander';
-    bookData.publisher = 'Sahil';
-    bookData.content = [];
-
-    for (i = 0; i < result.length; i++) {
-      if (result[i].published > cutoff) {
-        links.push(process.ENV.PARSER_ARTICLE + '?api_key=' + process.env.PARSER_KEY + '&url=' + result[i].link);
-      }
-    }
-  });
-};
-
-module.exports.today = function () {
   var links = [];
   async.waterfall([
 
@@ -55,6 +31,9 @@ module.exports.today = function () {
       return doneCallback(null, links);
     },
     function (links, doneCallback) {
+      if (links.length === 0) {
+        return doneCallback('There are no new articles today');
+      }
       async.eachSeries(links, function (link, cb) {
         var options = {
           method: 'GET',
