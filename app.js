@@ -21,7 +21,6 @@ module.exports.today = function () {
     },
     function (rss, doneCallback) {
       var cutoff = new Date().setHours(0, 0, 0, 0);
-      cutoff = new Date('2015-01-01');
 
       for (i = 0; i < rss.length; i++) {
         if (rss[i].published > cutoff) {
