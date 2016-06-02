@@ -52,9 +52,10 @@ module.exports.today = function () {
           var chapter = {
             title: body.title,
             author: body.author,
-            content: body.html
+            data: body.html
           };
           bookData.content.push(chapter);
+
           return cb(null);
         });
       }, function (err) {
@@ -71,8 +72,7 @@ module.exports.today = function () {
       process.exit(0);
     }
 
-    new epub(bookData, __dirname + new Date().toISOString().substring(0, 10) + ' - CodeSimplicity.epub');
-    console.log('Done');
+    new epub(bookData, './CodeSimplicity.epub');
   });
 };
 
