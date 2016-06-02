@@ -48,6 +48,7 @@ module.exports.today = function () {
         };
 
         request(options, function (err, response, body) {
+          body = JSON.parse(body);
           var chapter = {
             title: body.title,
             author: body.author,
