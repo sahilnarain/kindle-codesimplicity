@@ -7,6 +7,12 @@ var feedUrl = 'http://www.codesimplicity.com/feed';
 var content = [];
 
 module.exports.today = function () {
+  var bookData = {};
+  bookData.title = 'Code Simplicity Blogs';
+  bookData.author = 'Max Kanat-Alexander';
+  bookData.publisher = 'Sahil';
+  bookData.content = [];
+
   var links = [];
   async.waterfall([
 
@@ -21,7 +27,6 @@ module.exports.today = function () {
     },
     function (rss, doneCallback) {
       var cutoff = new Date().setHours(0, 0, 0, 0);
-      cutoff = new Date('2015-01-01');
 
       for (i = 0; i < rss.length; i++) {
         if (rss[i].published > cutoff) {
@@ -48,7 +53,8 @@ module.exports.today = function () {
             author: body.author,
             content: body.html
           };
-
+          bookData.content.push(chapter);
+          return cb(null);
         });
       }, function (err) {
         if (err) {
@@ -58,14 +64,13 @@ module.exports.today = function () {
         return doneCallback(null);
       });
     },
-  ], function (err, result) {
+  ], function (err) {
     if (err) {
       console.log(err);
-      process.exit(0);
     }
 
-    console.log(result);
-    process.exit(1);
+    new epub(bookData, __dirname + '/CodeSimplicity.epub');
+    console.log('Done');
   });
 };
 
